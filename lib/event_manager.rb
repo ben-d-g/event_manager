@@ -32,6 +32,54 @@ def legislators_by_zipcode(zip)
   end
 end
 
+def most_common_hour(date_times)
+  hour_frequencies = date_times.reduce({}) do |freq, date_time|
+    if freq.keys.include?(date_time.hour)
+      freq[date_time.hour] += 1
+    else
+      freq[date_time.hour] = 1
+    end
+    freq
+  end
+
+  hour_frequencies = hour_frequencies.sort_by{|key, value| value}
+
+  return hour_frequencies[-1][0]
+end
+
+def most_common_day(date_times)
+  day_frequencies = date_times.reduce({}) do |freq, date_time|
+    if freq.keys.include?(date_time.wday)
+      freq[date_time.wday] += 1
+    else
+      freq[date_time.wday] = 1
+    end
+    freq
+  end
+
+  day_frequencies = day_frequencies.sort_by{|key, value| value}
+
+  return case day_frequencies[-1][0]
+  when 0
+    "Sunday"
+  when 1
+    "Monday"
+  when 2
+    "Tuesday"
+  when 3
+    "Wednesday"
+  when 4
+    "Thursday"
+  when 5
+    "Friday"
+  when 6
+    "Saturday"
+  end
+
+
+  #return day_frequencies[-1][0]
+end
+
 def save_thank_you_letter(id,form_letter)
   Dir.mkdir('output') unless Dir.exist?('output')
 
@@ -53,15 +101,20 @@ contents = CSV.open(
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
 
+date_times = []
+
 contents.each do |row|
   id = row[0]
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
   legislators = legislators_by_zipcode(zipcode)
+  phone_number = clean_phone_number(row[:homephone])
+  date_times.push(Time.strptime(row[:regdate], "%m/%d/%y %H:%M"))
 
   form_letter = erb_template.result(binding)
 
   save_thank_you_letter(id,form_letter)
-
-  puts(clean_phone_number(row[:homephone]))
 end
+
+puts("Most signups occured at hour #{most_common_hour(date_times)}")
+puts("Most signups occured on day #{most_common_day(date_times)}")

@@ -93,7 +93,7 @@ end
 puts 'EventManager initialized.'
 
 contents = CSV.open(
-  'event_attendees.csv',
+  'event_attendees_full.csv',
   headers: true,
   header_converters: :symbol
 )
@@ -111,9 +111,12 @@ contents.each do |row|
   phone_number = clean_phone_number(row[:homephone])
   date_times.push(Time.strptime(row[:regdate], "%m/%d/%y %H:%M"))
 
-  form_letter = erb_template.result(binding)
+  #form_letter = erb_template.result(binding)
 
-  save_thank_you_letter(id,form_letter)
+  #save_thank_you_letter(id,form_letter)
+  if date_times.length % 100 == 0
+    puts date_times.length
+  end
 end
 
 puts("Most signups occured at hour #{most_common_hour(date_times)}")

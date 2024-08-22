@@ -1,3 +1,4 @@
 # event_manager
 
-Start from iteration 4
+Most signups happened between 11pm and midnight
+Most signups happened on a Wednesday
